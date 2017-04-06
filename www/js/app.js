@@ -1,7 +1,7 @@
 var elephant = angular.module('elephant',
 [
   'ionic',
-  'ionic.service.core',
+  'ionic.cloud',
   'ngCordova',
   'ngStorage',
   'ionic.service.core',
@@ -25,11 +25,25 @@ var elephant = angular.module('elephant',
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, $ionicCloudProvider) {
 
   //$ionicConfigProvider.views.transition('android');
   $ionicConfigProvider.scrolling.jsScrolling(false);
   //$ionicConfigProvider.spinner.icon('android');
+
+  $ionicCloudProvider.init({
+    "core": {
+      "app_id": "1a81529a"
+    },
+    "push": {
+      "sender_id": "519341329763",
+      "pluginConfig": {
+        "android": {
+          "iconColor": "#343434"
+        }
+      }
+    }
+  });
 
   $stateProvider
 
