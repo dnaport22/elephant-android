@@ -18,4 +18,9 @@ build() {
 	Archive/elephant'_'`date +%s`.apk
 }
 
-$1
+run() {
+	echo "Running app..."
+	ionic run android
+}
+
+$1 $2
