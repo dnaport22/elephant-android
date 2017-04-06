@@ -2,3 +2,4 @@
 .idea
 *.orig
 node_modules/
+platforms/
