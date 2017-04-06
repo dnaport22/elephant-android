@@ -39,7 +39,7 @@ var elephant = angular.module('elephant',
       "sender_id": "519341329763",
       "pluginConfig": {
         "android": {
-          "iconColor": "#343434"
+          "icon": 'icon'
         }
       }
     }

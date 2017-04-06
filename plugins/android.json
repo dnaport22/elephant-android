@@ -8,40 +8,40 @@
     },
     "installed_plugins": {
         "cordova-plugin-camera": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "cordova-plugin-device": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "cordova-plugin-file": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "cordova-plugin-file-transfer": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "cordova-plugin-splashscreen": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "ionic-plugin-deploy": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "ionic-plugin-keyboard": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         },
         "phonegap-plugin-push": {
             "SENDER_ID": "519341329763",
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         }
     },
     "dependent_plugins": {
         "cordova-plugin-compat": {
-            "PACKAGE_NAME": "com.elephant.app"
+            "PACKAGE_NAME": "com.elephant_beta.app"
         }
     }
 }
