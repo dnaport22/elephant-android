@@ -16,6 +16,8 @@ build() {
 	zipalign -v 4\
 	platforms/android/build/outputs/apk/android-release-unsigned.apk\
 	Archive/elephant'_'`date +%s`.apk
+	echo "============"
+	echo "Build is successfully created. Find it here, Archive/elephant'_'`date +%s`.apk"
 }
 
 run() {
