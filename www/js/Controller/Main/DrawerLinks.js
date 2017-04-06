@@ -1,9 +1,4 @@
-elephant.controller('DrawerController', function($state, $scope, $location, $localStorage, UIfactory, $ionicPopover, $ionicHistory, $cordovaLocalNotification) {
-
-  var now = new Date().getTime();
-  var _10SecondsFromNow = new Date(now + 10 * 1000);
-
-  cordova.plugins.notification
+elephant.controller('DrawerController', function($state, $scope, $location, $localStorage, UIfactory, $ionicPopover, $ionicHistory) {
 
   $scope.username = $localStorage.user_username;
   $scope.$storage = $localStorage.$default({
