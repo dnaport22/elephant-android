@@ -3,8 +3,7 @@ Register.factory('RegisterDataFactory', function (UserResource, RegisterNotifica
     var auth = $firebaseAuth();
     auth.$createUserWithEmailAndPassword(data['mail'], data['pass'])
     .then(function (firebaseUser) {
-      UIfactory.hideSpinner()
-      console.log(firebaseUser);
+      UIfactory.hideSpinner();
       firebaseUser.sendEmailVerification();
       $rootScope.$emit('$onUserRegisterFinished');
       UIfactory.showAlert('Registration pending approval', RegisterNotifications.COMPLETE_REGISTER);
@@ -18,7 +17,6 @@ Register.factory('RegisterDataFactory', function (UserResource, RegisterNotifica
 
   return {
     newUserData: {
-      name: null,
       mail: null,
       pass: null
     },
