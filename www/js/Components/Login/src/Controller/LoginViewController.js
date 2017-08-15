@@ -1,5 +1,6 @@
-Login.controller('LoginViewController', function($stateParams, $scope, $ionicSideMenuDelegate, UIfactory, AuthenticationService, $state, $ionicHistory, $rootScope, CurrentUserfactory, $firebaseAuth) {
+Login.controller('LoginViewController', function($stateParams, $scope, $ionicSideMenuDelegate, UIfactory, AuthenticationService, $state, $ionicHistory, $rootScope, CurrentUserfactory, $firebaseAuth, UserFactory) {
   UIfactory.hideSpinner();
+	var LoginFactory = new UserFactory;
   $scope.loginData = {username: null, password: null};
   $scope.loginMessage = null;
 
@@ -16,12 +17,13 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
   };
 
   var validateField = function () {
-    if ($scope.loginData.username !== null || $scope.loginData.password !== null) {
-      return true;
+    if ($scope.loginData.username.length > 0 || $scope.loginData.password.length > 0) {
+			return LoginFactory.validateEmail($scope.loginData.username);
+    } else {
+			UIfactory.hideSpinner();
+			UIfactory.showAlert('Alert', 'Please complete all fields.');
+			return false;
     }
-    UIfactory.hideSpinner();
-    UIfactory.showAlert('Alert', 'Fill all fields.');
-    return false;
   };
 
   var clearFields = function () {
