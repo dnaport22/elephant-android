@@ -46,12 +46,20 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
         $rootScope.$emit('$onLoginFinished', response);
       } else {
         UIfactory.hideSpinner();
-        UIfactory.showAlert('Alert', 'Account not verified.')
+        UIfactory.showAlert('Alert', 'Please click on the activation link sent to your LSBU email address. If the activation link has expired (which happens after 24 hours) please contact us on myelephant.xyz@gmail.com.')
       }
     }, function (error) {
-      UIfactory.hideSpinner();
       var statusText = error.message || "Error while log in";
-      UIfactory.showAlert('Alert', statusText);
+      switch (statusText) {
+        case "The password is invalid or the user does not have a password":
+					UIfactory.hideSpinner();
+					UIfactory.showAlert('Alert', "Incorrect password");
+					break;
+        default:
+					UIfactory.hideSpinner();
+					UIfactory.showAlert('Alert', "Incorrect password");
+      }
+
     });
   };
 
