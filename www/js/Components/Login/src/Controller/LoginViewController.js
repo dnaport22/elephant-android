@@ -51,13 +51,13 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
     }, function (error) {
       var statusText = error.message || "Error while log in";
       switch (statusText) {
-        case "The password is invalid or the user does not have a password":
+        case "The password is invalid or the user does not have a password.":
 					UIfactory.hideSpinner();
 					UIfactory.showAlert('Alert', "Incorrect password");
 					break;
         default:
 					UIfactory.hideSpinner();
-					UIfactory.showAlert('Alert', "Incorrect password");
+					UIfactory.showAlert('Alert', statusText);
       }
 
     });

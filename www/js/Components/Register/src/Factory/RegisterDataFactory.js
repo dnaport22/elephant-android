@@ -9,9 +9,17 @@ Register.factory('RegisterDataFactory', function (UserResource, RegisterNotifica
       UIfactory.showAlert('Registration pending approval', RegisterNotifications.COMPLETE_REGISTER);
       $ionicHistory.goBack();
     }, function (error) {
-      console.log(error.statusText);
-      UIfactory.hideSpinner();
-      UIfactory.showAlert('Ooops !', RegisterNotifications.ERROR);
+      var statusMessage = error.message;
+      switch (statusMessage) {
+        case "The email address is already in use by another account.":
+					UIfactory.hideSpinner();
+					UIfactory.showAlert('Ooops !', RegisterNotifications.DUPLICATE_ACCOUNT);
+					break;
+        default:
+					UIfactory.hideSpinner();
+					UIfactory.showAlert('Ooops !', RegisterNotifications.ERROR);
+      }
+
     })
   };
 
