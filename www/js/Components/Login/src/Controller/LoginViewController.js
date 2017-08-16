@@ -40,13 +40,14 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
 
   var executeLogin = function () {
     var auth = $firebaseAuth();
+    UIfactory.showSpinner();
     auth.$signInWithEmailAndPassword($scope.loginData.username, $scope.loginData.password)
     .then(function (response) {
       if (response.emailVerified) {
         $rootScope.$emit('$onLoginFinished', response);
       } else {
         UIfactory.hideSpinner();
-        UIfactory.showAlert('Alert', 'Please click on the activation link sent to your LSBU email address. If the activation link has expired (which happens after 24 hours) please contact us on myelephant.xyz@gmail.com.')
+				UIfactory.resendVerificationMail()
       }
     }, function (error) {
       var statusText = error.message || "Error while log in";
@@ -55,11 +56,12 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
 					UIfactory.hideSpinner();
 					UIfactory.showAlert('Alert', "Incorrect password");
 					break;
-        default:
+        case "There is no user record corresponding to this identifier. The user may have been deleted.":
 					UIfactory.hideSpinner();
 					UIfactory.showAlert('Alert', statusText);
+        default:
+					UIfactory.noAccountAlert();
       }
-
     });
   };
 
