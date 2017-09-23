@@ -22,8 +22,15 @@ PostReport.controller('PostItemViewController', function($timeout, $state, $scop
     var image = document.getElementById('upImage');
     var photo = 'data:image/jpeg;base64,' + URI;
     image.style.backgroundImage = "url('" + photo + "')";
-    document.getElementById("upload-image-container").style.display = "block";
-    document.getElementById("select-image-button").innerHTML= "Reselect image";
+    image.style.height = "360px";
+    image.style.backgroundColor = "#eee";
+    image.style.backgroundSize = "contain";
+    image.style.backgroundRepeat = "no-repeat";
+    image.style.backgroundOrigin = "content-box";
+    image.style.backgroundPosition = "center";
+
+    document.getElementById("select-image-button-container").style.display = "none";
+    document.getElementById("reselect-image-button").style.display = "block";
   };
 
   /**
@@ -92,8 +99,12 @@ PostReport.controller('PostItemViewController', function($timeout, $state, $scop
     inputVal.setValue('name', '');
     inputVal.setValue('desc', '');
     IMAGE_URI = null;
-    document.getElementById("upload-image-container").style.display = "none";
-    document.getElementById("select-image-button").innerHTML= "Select image";
+		var image = document.getElementById('upImage');
+		image.style.backgroundImage = "url('./')";
+		image.style.height = "180px";
+		image.style.backgroundColor = "#11c1f3";
+		document.getElementById("reselect-image-button").style.display = "none";
+    document.getElementById("select-image-button-container").style.display = "flex";
   };
 
   /**

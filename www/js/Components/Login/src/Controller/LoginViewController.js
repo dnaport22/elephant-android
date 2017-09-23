@@ -17,12 +17,13 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
   };
 
   var validateField = function () {
-    if ($scope.loginData.username.length > 0 || $scope.loginData.password.length > 0) {
-			return LoginFactory.validateEmail($scope.loginData.username);
-    } else {
+    if ($scope.loginData.username === null || $scope.loginData.password === null) {
 			UIfactory.hideSpinner();
 			UIfactory.showAlert('Alert', 'Please complete all fields.');
 			return false;
+
+    } else {
+			return LoginFactory.validateEmail($scope.loginData.username);
     }
   };
 
@@ -58,8 +59,6 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
 					break;
         case "There is no user record corresponding to this identifier. The user may have been deleted.":
 					UIfactory.hideSpinner();
-					UIfactory.showAlert('Alert', statusText);
-        default:
 					UIfactory.noAccountAlert();
       }
     });
@@ -86,19 +85,19 @@ Login.controller('LoginViewController', function($stateParams, $scope, $ionicSid
     }
     else if (path == 'postitem') {
       UIfactory.hideSpinner();
-      $ionicHistory.goBack();
+			$state.go('app.main');
     }
   };
 
   //Login intent message
   if (path == 'main') {
-    $scope.loginMessage = 'Log in to get or post items.';
+    $scope.loginMessage = 'Log in to get or post items';
   }
   else if(path == 'postitem') {
-    $scope.loginMessage = 'Log in to post items.';
+    $scope.loginMessage = 'Log in to post items';
   }
   else if (path == 'getitem') {
-    $scope.loginMessage = 'Log in to send a message.';
+    $scope.loginMessage = 'Log in to send a message';
   }
 
 });

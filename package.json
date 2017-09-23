@@ -6,6 +6,7 @@
         "@ionic/cloud": "^0.16.0",
         "angular-cache": "^4.6.0",
         "cordova-android": "^6.2.3",
+        "cordova-plugin-inappbrowser": "^1.7.1",
         "gulp": "^3.9.1",
         "gulp-concat": "^2.2.0",
         "gulp-minify-css": "^0.3.0",
@@ -42,7 +43,8 @@
             "ionic-plugin-deploy": {},
             "phonegap-plugin-push": {
                 "SENDER_ID": "519341329763"
-            }
+            },
+            "cordova-plugin-inappbrowser": {}
         },
         "platforms": [
             "android"

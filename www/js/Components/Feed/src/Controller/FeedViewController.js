@@ -1,26 +1,50 @@
-elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelperService, ViewsResource, $state, $ionicHistory, $scope, $http, $ionicPlatform,$location, $timeout, $localStorage, UIfactory, elephantData_URL, $ionicAnalytics, $templateCache, $ionicScrollDelegate, $rootScope, CurrentUserfactory, AuthenticationService) {
-  $rootScope.slideHeader = false;
+elephant.controller('FeedViewController', function($window, $ionicSlideBoxDelegate, DrupalApiConstant, DrupalHelperService, ViewsResource, $state, $ionicHistory, $scope, $http, $ionicPlatform,$location, $timeout, $localStorage, UIfactory, elephantData_URL, $ionicAnalytics, $templateCache, $ionicScrollDelegate, $rootScope, CurrentUserfactory, AuthenticationService) {
+  UIfactory.showSpinner();
+	$rootScope.slideHeader = false;
   $rootScope.pixelLimit = 0;
   $scope.state = CurrentUserfactory.initStorage;
-
+  var slideShowItems = [];
+  $scope.showSlides = false;
+  $scope.slideShow = false;
+  $scope.searchItemsFinished = false;
+	setTimeout(function(){
+		$ionicSlideBoxDelegate.update();
+	},1000);
+	$scope.searchActive = false;
   /**
    * Loading spinner
    */
-  //UIfactory.showSpinner();
 
   //pagination options
   var paginationOptions = {};
   paginationOptions.pageFirst = 0;
-  paginationOptions.pageLast = undefined;
+  paginationOptions.pageLast = 0;
   paginationOptions.maxPage = undefined;
+  $scope.slideLimit = 3;
+
+  var searchPaginationOptions = {};
+	searchPaginationOptions.pageFirst = 0;
+	searchPaginationOptions.pageLast = 0;
+	searchPaginationOptions.maxPage = undefined;
 
   var viewOptions = {
     view_name: 'item_feed',
     page: 0,
-    pagesize: 5,
+    pagesize: 10,
     format_output: '0'
   };
 
+  var searchViewOptions = {
+		view_name: 'item_feed',
+		page: 0,
+		pagesize: 10,
+		format_output: '0'
+  };
+
+  var slideViewOptions = {
+    view_name: 'in_app_slideshow',
+    page: 0
+  };
 
   /**
    * Home page view list & grid
@@ -40,10 +64,10 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
    */
   $scope.items = [];
   var DOMFeeds = [];
+  $scope.DOMFeeds = [];
+  var initialFeed = [];
+  var searchFeed = [];
   $scope.NewFeeds = [];
-  var preservedFeed = DOMFeeds;
-  var searchFeeds = [];
-  var retrieved = 0;
   $scope.searchValue = null;
 
   /**
@@ -53,12 +77,13 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
    *         filter => serach input
    * @return items from the server $scope.items[]
    */
-  $scope.loadMore = function(callback) {
-    ViewsResource.retrieve(viewOptions)
+  $scope.loadMore = function(callback, options) {
+    var that = $scope;
+    var call = callback;
+    ViewsResource.retrieve(options)
       .then(function (response) {
-        UIfactory.hideSpinner();
         // Navigate to call specific handler
-        switch (callback) {
+        switch (call) {
           case 'refresh':
             return handlePullToRefresh(response.data);
             break;
@@ -74,42 +99,110 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
             return true;
         }
       }, function (err) {
-          console.log(err)
+          that.loadMore(call, options);
         });
   };
+  $scope.loadMore('initial', viewOptions);
+
+  $scope.loadSlideShow = function () {
+    UIfactory.showSpinner();
+    ViewsResource.retrieve(slideViewOptions)
+      .then(function (response) {
+        if (response.data.length === 0) {
+          $scope.showSlides = false;
+          $scope.slideShow = false;
+        } else {
+          $scope.showSlides = true;
+          $scope.slideShow = true;
+					handleSlideShowData(response.data);
+        }
+			})
+	};
+  $scope.loadSlideShow();
+
+  var handleSlideShowData = function (data) {
+		for (var i = 0; i < data.length; i++) {
+			slideShowItems = slideShowItems.concat(prepareSlides(data[i]));
+		}
+		$scope.slideShowItems = slideShowItems;
+		UIfactory.hideSpinner();
+	};
+
+  var prepareSlides = function (data) {
+		if("field_image" in data && "und" in data.field_image) {
+			angular.forEach(data.field_image.und, function (value, key) {
+				var imgPath = data.field_image.und[key].uri.split('//')[1].replace(/^\/+/, "");
+				data.field_image.und[key].imgPath = DrupalHelperService.getPathToImgByStyle(DrupalApiConstant.imageStyles.large) + imgPath;
+			});
+
+		}
+		return data;
+	};
+
+  $scope.onSlideClick = function (url) {
+		window.open(url, '_system', 'location=no,clearsessioncache=no,clearcache=no');
+	};
 
   /**
-   * Called on infinte scroll
+   * Called on infinite scroll
    */
-  $scope.loadInfiniteScroll = function () {
-    if (paginationOptions.maxPage === undefined) {
-      //start initial with 0
-      paginationOptions.pageLast = (paginationOptions.pageLast === undefined) ? 0 : paginationOptions.pageLast + 1,
-        viewOptions.page = paginationOptions.pageLast;
-
-    return $scope.loadMore('scroll');
-    }
-
+  $scope.loadInitialInfiniteScroll = function () {
+		if (!$scope.itemsFinished) {
+			return initialInfinite();
+		}
+    return false;
   };
 
+	/**
+	 * Called on infinite scroll
+	 */
+	$scope.loadSearchInfiniteScroll = function () {
+		if (!$scope.searchItemsFinished) {
+			return searchPageInfinite();
+		}
+		return false;
+	};
+
+  var initialInfinite = function () {
+		if (paginationOptions.maxPage === undefined) {
+			//start initial with 0
+			paginationOptions.pageLast = (paginationOptions.pageLast === undefined) ? 0 : paginationOptions.pageLast + 1,
+				viewOptions.page = paginationOptions.pageLast;
+			$scope.loadMore('scroll', viewOptions);
+		}
+	};
+
+	var searchPageInfinite = function () {
+		if (searchPaginationOptions.maxPage === undefined) {
+			//start initial with 0
+			searchPaginationOptions.pageLast = (searchPaginationOptions.pageLast === undefined) ? 0 : searchPaginationOptions.pageLast + 1,
+				searchViewOptions.page = searchPaginationOptions.pageLast;
+			$scope.loadMore('scroll', searchViewOptions);
+		}
+	};
 
   /**
    * Initial loadMore() call handler.
    */
   var handleInitialLoad = function(data) {
     for (var i = 0; i < data.length; i++) {
-      DOMFeeds = DOMFeeds.concat(prepareFeed(data[i]));
+      initialFeed = initialFeed.concat(prepareFeed(data[i]));
     }
-    $scope.DOMFeeds = DOMFeeds;
+    $scope.DOMFeeds = initialFeed;
+    UIfactory.hideSpinner();
   };
+
+	Array.prototype.random = function () {
+		return this[Math.floor((Math.random()*this.length))];
+	};
 
   //prepare article after fetched from server
   function prepareFeed(data) {
+    data.created = new Date(data.created*1000);
     if("field_item_image" in data && "und" in data.field_item_image) {
       angular.forEach(data.field_item_image.und, function (value, key) {
-
         var imgPath = data.field_item_image.und[key].uri.split('//')[1].replace(/^\/+/, "");
-        data.field_item_image.und[key].imgPath = DrupalHelperService.getPathToImgByStyle(DrupalApiConstant.imageStyles.thumbnail) + imgPath;
+        data.field_item_image.und[key].imgPath = DrupalHelperService.getPathToImgByStyle(DrupalApiConstant.imageStyles.medium) + imgPath;
         data.nid = parseInt(data.nid);
       });
 
@@ -123,7 +216,7 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
    */
   $scope.pullToRefresh = function() {
     viewOptions.page = 0;
-    $scope.loadMore('refresh');
+    $scope.loadMore('refresh', viewOptions);
   };
 
 
@@ -133,39 +226,50 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
    */
   $scope.inputVal = false;
   $scope.search = function(filter) {
+		if ($scope.slideShow) {
+			$scope.showSlides = false;
+		}
+		$scope.searchActive = true;
+		document.getElementById('search').style.color = "white";
+		searchPaginationOptions.pageLast = undefined;
     $scope.inputVal = true;
-    $scope.DOMFeeds = [];
-    viewOptions.title = filter;
-    $scope.loadMore('search');
+    if (filter.length > 2) {
+			UIfactory.showSpinner();
+			searchFeed = [];
+			searchViewOptions.combine = filter;
+			$scope.loadMore('search', searchViewOptions);
+    }
   };
 
   var handleSearchLoad = function (data) {
-    pollingFeeds(data);
+		if (data.length === 0) {
+			$scope.searchItemsFinished = true;
+		} else {
+			for (var i = 0; i < data.length; i++) {
+				searchFeed = searchFeed.concat(prepareFeed(data[i]));
+			}
+			$scope.DOMFeeds = searchFeed;
+		}
+		$scope.$broadcast('scroll.infiniteScrollComplete');
+		UIfactory.hideSpinner();
   };
 
   /**
    * Description: clears input field and hide clear button.
    */
   $scope.clearInput = function() {
+    if ($scope.slideShow) {
+			$scope.showSlides = true;
+    }
+    document.getElementById('search').style.color = "transparent";
     inputVal.setValue('search', '');
     $scope.inputVal = false;
-    $scope.DOMFeeds = DOMFeeds;
+    searchViewOptions.page = 0;
+    searchPaginationOptions.pageLast = undefined;
+    $scope.searchActive = false;
+    $scope.searchItemsFinished = false;
+    $scope.DOMFeeds = initialFeed;
   };
-
-  /**
-   * Description: check() function is called by infinite scroll to check if there
-   * are items in the $scope.items array.
-   */
-  $scope.check = function() {
-    return $scope.DOMFeeds.length > 0;
-  };
-
-  /**
-   * Executing loadMore() with initial state when view is loaded.
-   */
-  $scope.$on('$ionicView.loaded', function() {
-    $scope.loadMore('initial');
-  });
 
   /**
    * Executing infinite scroll.
@@ -179,8 +283,20 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
    * Broadcasting infinite scroll changes.
    */
   var handleInfiniteScroll = function (data) {
-    pollingFeeds(data);
-    $scope.$broadcast('scroll.infiniteScrollComplete');
+    if (data.length === 0) {
+    	if (!$scope.searchActive) {
+				$scope.itemsFinished = true;
+			}
+    } else {
+			for (var i = 0; i < data.length; i++) {
+				initialFeed = initialFeed.concat(prepareFeed(data[i]));
+			}
+			$scope.DOMFeeds = initialFeed;
+
+    }
+
+		$scope.$broadcast('scroll.infiniteScrollComplete');
+    UIfactory.hideSpinner();
   };
 
 
@@ -215,21 +331,29 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
         $scope.DOMFeeds = $scope.NewFeeds.concat($scope.DOMFeeds);
       }
     }
+    UIfactory.hideSpinner();
   };
   /**
    * Description: check() function is called by infinite scroll to check if there
    * are items in the $scope.items array.
    */
-  $scope.check = function() {
-    return retrieved > 0
+  $scope.checkInitial = function() {
+    return true;
   };
+
+	/**
+	 * Description: check() function is called by infinite scroll to check if there
+	 * are items in the $scope.items array.
+	 */
+	$scope.checkSearch = function() {
+		return true;
+	};
 
   /**
    * Description: used for navigating user to getitem and login/post item page.
    */
   $scope.trafficLight = function(route, item_name, item_desc, item_date, item_uid, item_img) {
     if (route == 'getitem') {
-      // if(typeof analytics !== "undefined") { analytics.trackEvent("Category", "Action", "Label", 25); }
       $location.path("/app/getitem/" + item_name + "/" + item_desc + "/" + item_date + "/" + item_uid + "/" + item_img )
     }
     else if (route == 'login') {
@@ -238,20 +362,14 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
     }
   };
 
-  // /**
-  //  * This loads the items before user enters the page.
-  //  */
-  // if($localStorage.app_launch_activity == 0) {
-  //   $scope.$on('$ionicView.beforeEnter', function() {
-  //     $scope.loadMore();
-  //   });
-  // }
-  // else {
-  //   $scope.$on('$stateChangeSuccess', function() {
-  //     $scope.loadMore();
-  //   });
-  // }
-
+  /**
+   * This loads the items before user enters the page.
+   */
+  if(!$localStorage.app_launch_activity) {
+    $scope.$on('$ionicView.beforeEnter', function() {
+      $scope.loadMore('initial');
+    });
+  }
 
   $scope.reloadData = function() {
     $state.go($state.current, {reload: true, inherit: false})
@@ -262,14 +380,14 @@ elephant.controller('FeedViewController', function(DrupalApiConstant, DrupalHelp
     $state.go('app.feedview', {feed: feed_data});
   };
 
-  // /**
-  //  * This is redirect the user to app.userguide state,
-  //  * if the user has open the app for first time.
-  //  */
-  // if($localStorage.app_launch_activity == 0) {
-  //   UIfactory.showSpinner();
-  //   $state.go('app.userguide');
-  // }
+  /**
+   * This is redirect the user to app.userguide state,
+   * if the user has open the app for first time.
+   */
+  if(!$localStorage.app_launch_activity) {
+    UIfactory.showSpinner();
+    $state.go('app.userguide');
+  }
 
 
 });

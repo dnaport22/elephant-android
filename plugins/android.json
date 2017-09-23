@@ -37,6 +37,9 @@
         "phonegap-plugin-push": {
             "SENDER_ID": "519341329763",
             "PACKAGE_NAME": "com.elephant_beta.app"
+        },
+        "cordova-plugin-inappbrowser": {
+            "PACKAGE_NAME": "com.elephant_beta.app"
         }
     },
     "dependent_plugins": {

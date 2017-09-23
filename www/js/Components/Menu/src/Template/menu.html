@@ -13,12 +13,12 @@
   </ion-side-menu-content>
 
   <ion-side-menu side="left">
-    <ion-header-bar class="bar-dark">
-      <img class="title" src="./img/icon-40.png" style="margin: auto;"></img>
-      <div class="h1 title">elephant</div>
+    <ion-header-bar class="bar-dark" style="height:80px">
+      <div class="h1 title">elephant app</div>
     </ion-header-bar>
     <ion-content>
 
+      <div style="margin-top: 30px;">
       <ion-list ng-if="$state.authenticated">
         <ion-item>
           Logged in as {{::$state.email | split:'@':0}}
@@ -29,6 +29,7 @@
           Log in to view more options
         </ion-item>
       </ion-list>
+      </div>
 
       <ion-list ng-repeat = "link in drawerLinks_loggedIn" ng-if="$state.authenticated">
         <ion-item menu-close ng-href="{{::link.href}}">

@@ -18,26 +18,6 @@ var elephant = angular.module('elephant',
   'MyItem'
 ])
 
-// .config(function ($ionicCloudProvider) {
-//   // This initialise ionic cloud provider, this should be moved into a separate directory.
-//   $ionicCloudProvider.init({
-//     "core": {
-//       "app_id": "e2fc4a7c"
-//     },
-//     "push": {
-//       "sender_id": "519341329763",
-//       "pluginConfig": {
-//         "ios": {
-//           "badge": true,
-//           "sound": true,
-//           "gcmSandbox": true
-//         }
-//       }
-//     }
-//   });
-//
-// })
-
 .run(function($ionicPlatform, $ionicAnalytics, $localStorage, AuthenticationService, UIfactory) {
   $ionicPlatform.ready(function() {
     UIfactory.showSpinner();
