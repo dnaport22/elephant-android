@@ -7,11 +7,14 @@ var elephant = angular.module('elephant',
   'ngCookies',
   'ionic.service.core',
   'ionic.service.analytics',
+  'ionic.contrib.ui.hscrollcards',
   'firebase',
   'Login',
   'Register',
   'PasswordReset',
   'Menu',
+  'HomePage',
+  'Search',
   'Legal',
   'Feed',
   'PostItem',
@@ -48,9 +51,9 @@ var elephant = angular.module('elephant',
 .config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider, DrupalApiConstant, $ionicCloudProvider) {
   DrupalApiConstant.drupal_instance = "http://developv2.myelephant.xyz/";
   DrupalApiConstant.api_endpoint = "api/elev2/";
-  //$ionicConfigProvider.views.transition('android');
+  $ionicConfigProvider.views.transition('android');
   $ionicConfigProvider.scrolling.jsScrolling(false);
-  //$ionicConfigProvider.spinner.icon('android');
+  $ionicConfigProvider.spinner.icon('android');
 
   const TEMPLATE_DIR = 'js/Components/';
 

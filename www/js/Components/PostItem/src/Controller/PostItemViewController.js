@@ -1,6 +1,7 @@
-PostReport.controller('PostItemViewController', function($timeout, $state, $scope, $ionicHistory, $localStorage ,$ionicActionSheet, UIfactory, DrupalHelperService, $rootScope, PostItemDataFactory, PostItemUploadFactory) {
+PostReport.controller('PostItemViewController', function($timeout, $state, $scope, $ionicHistory, $localStorage ,$ionicActionSheet, UIfactory, DrupalHelperService, $rootScope, PostItemDataFactory, PostItemUploadFactory, CATEGORIES) {
   $scope.data = null;
   var IMAGE_URI = null;
+  $scope.categories  = CATEGORIES;
 
   // Listens for image data ready event
   $rootScope.$on('$imageUriReady', function (event, data) {
@@ -72,8 +73,8 @@ PostReport.controller('PostItemViewController', function($timeout, $state, $scop
   /**
    * Executed by Post button in the viewport.
    */
-  $scope.onPostItem = function () {
-    if (validateMandatoryFields()) {
+  $scope.onPostItem = function (category) {
+    if (validateMandatoryFields(category)) {
       PostItemDataFactory.postReportData();
     }
   };
@@ -81,17 +82,21 @@ PostReport.controller('PostItemViewController', function($timeout, $state, $scop
   var validateMandatoryFields = function () {
     var title = inputVal.getValue('name');
     var body  = inputVal.getValue('desc');
-    if (title === "" || body === "" || IMAGE_URI === null) {
+    var category = inputVal.getValue('category');
+    if (title === "" || body === "" || IMAGE_URI === null || category === null) {
       UIfactory.hideSpinner();
       UIfactory.showAlert('Alert', 'Please complete all fields and select an image.');
       return false;
     }
-    PostItemDataFactory.newPostData.title = title;
-    PostItemDataFactory.newPostData.body = DrupalHelperService.structureField({value: body});
-    PostItemDataFactory.newPostData.field_user_mail = DrupalHelperService.structureField({value:  $localStorage.email});
-    PostItemDataFactory.newPostData.field_item_image.base64 = IMAGE_URI;
+		PostItemDataFactory.newPostData.title = title;
+		PostItemDataFactory.newPostData.body = DrupalHelperService.structureField({value: body});
+		PostItemDataFactory.newPostData.field_user_mail = DrupalHelperService.structureField({value: $localStorage.email});
+		PostItemDataFactory.newPostData.field_item_image.base64 = IMAGE_URI;
+		PostItemDataFactory.newPostData.field_category = {und: {tid: category}};
+
     return true;
   };
+
   /**
    * Clear fields in the form.
    */

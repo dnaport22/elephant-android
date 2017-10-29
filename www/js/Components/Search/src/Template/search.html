@@ -1,0 +1,40 @@
+<ion-view hide-back-button="true" view-title="">
+    <ion-nav-buttons side="left">
+        <button class="button icon ion-chevron-left" style="color: white;" ng-click="back()"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+        <input placeholder="Search"
+               id="search"
+               ng-focus="true"
+               style="width:250px; background-color: inherit; color: white; border:none;"
+               ng-model="searchValue"
+               ng-change="search(this.searchValue)"
+               background-color: inherit;
+               border: none; color: white">
+        <button class="button button-small" ng-click="clearInput()">Clear</button>
+    </ion-nav-buttons>
+
+    <ion-content>
+        <!-- List view of the items -->
+        <ion-list>
+            <ion-item ng-repeat="item in DOMFeeds track by item.nid"
+                      class="item-thumbnail-left"
+                      ng-click="fullView(item)">
+                <img ng-src="{{item.field_item_image.und[0].imgPath}}">
+                <h2>{{::item.title}}</h2>
+                <p>{{::item.body.und[0].value}}</p>
+            </ion-item>
+            <ion-item ng-show="itemsFinished">Sorry no more items!</ion-item>
+        </ion-list>
+        </div>
+        <!-- End Main grid -->
+        <!-- Infinite scroll directive -->
+        <ion-infinite-scroll
+                ng-if="checkSearch()"
+                on-infinite="loadSearchInfiniteScroll()"
+                immediate-check="false"
+                distance="1%">
+        </ion-infinite-scroll>
+    </ion-content>
+
+</ion-view>
