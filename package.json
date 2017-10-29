@@ -4,6 +4,7 @@
     "description": "susApp: Test build",
     "dependencies": {
         "@ionic/cloud": "^0.16.0",
+        "android-versions": "^1.2.1",
         "angular-cache": "^4.6.0",
         "cordova-android": "^6.2.3",
         "cordova-plugin-inappbrowser": "^1.7.1",
